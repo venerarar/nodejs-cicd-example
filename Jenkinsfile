@@ -19,7 +19,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_FULL_TAG} ."
+                    bat "docker build -t ${IMAGE_FULL_TAG} ."
                 }
             }
         }
@@ -28,9 +28,9 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
-                        sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin"
-                        sh "docker push ${IMAGE_FULL_TAG}"
-                        sh "docker logout" // Good practice to logout
+                        bat "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin"
+                        bat "docker push ${IMAGE_FULL_TAG}"
+                        bat "docker logout" // Good practice to logout
                     }
                 }
             }
@@ -41,12 +41,12 @@ pipeline {
                 script {
                     // Stop and remove existing container if it's running
                     echo "Stopping and removing existing container (if any)..."
-                    sh "docker stop ${CONTAINER_NAME} || true"
-                    sh "docker rm ${CONTAINER_NAME} || true"
+                    bat "docker stop ${CONTAINER_NAME} || true"
+                    bat "docker rm ${CONTAINER_NAME} || true"
 
                     // Run the new container
                     echo "Running new container..."
-                    sh "docker run -d -p 3000:3000 --name ${CONTAINER_NAME} ${IMAGE_FULL_TAG}"
+                    bat "docker run -d -p 3000:3000 --name ${CONTAINER_NAME} ${IMAGE_FULL_TAG}"
                 }
             }
         }
